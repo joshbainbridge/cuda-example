@@ -1,0 +1,3 @@
+#!/bin/sh
+
+nvcc --run -x cu -rdc=true main.cpp info.cpp cpu/kernal.cpp gpu/kernal.cpp common/add_float.cpp
