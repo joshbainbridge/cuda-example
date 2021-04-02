@@ -4,20 +4,21 @@
 
 namespace {
 
-void dispatch(const float *argA, const float *argB, float *argC, int index) {
-  int tid = index;
+void kernal(const float *a, const float *b, float *c, int size) {
+  int index = 0;
+  int stride = 1;
 
-  argC[tid] = addFloat(argA[tid], argB[tid]);
+  for (int i = index; i < size; i += stride) {
+    c[i] = addFloat(a[i], b[i]);
+  }
 }
 
 } // namespace
 
 namespace cpu {
 
-void kernal(const float *argA, const float *argB, float *argC, int size) {
-  for (int i = 0; i < size; ++i) {
-    dispatch(argA, argB, argC, i);
-  }
+void dispatchKernal(const float *a, const float *b, float *c, int size) {
+  kernal(a, b, c, size);
 }
 
 } // namespace cpu

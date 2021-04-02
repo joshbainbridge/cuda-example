@@ -7,8 +7,8 @@
 #include <cstdio>
 #include <numeric>
 
-// Pick a random size for computation (20th prime number)
-constexpr int size = 113;
+// Pick a random size for computation (1000th prime number)
+constexpr int size = 7919;
 
 int main() {
   info();
@@ -28,11 +28,11 @@ int main() {
   };
 
   zero(argC, size);
-  cpu::kernal(argA, argB, argC, size);
+  cpu::dispatchKernal(argA, argB, argC, size);
   printf("CPU sum is equal to %f\n", sumv(argC, size));
 
   zero(argC, size);
-  gpu::kernal(argA, argB, argC, size);
+  gpu::dispatchKernal(argA, argB, argC, size);
   printf("GPU sum is equal to %f\n", sumv(argC, size));
 
   zero(argC, size);

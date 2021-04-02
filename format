@@ -1,3 +1,3 @@
 #!/bin/sh
 
-find | grep -E '(*.h|*.cpp)' | xargs clang-format -style=LLVM -i
+find -not -path './.*' | grep -E '(*.h|*.cpp)' | xargs clang-format -style=LLVM -i

@@ -1,5 +1,5 @@
 #pragma once
 
 namespace cpu {
-void kernal(const float *argA, const float *argB, float *argC, int size);
+void dispatchKernal(const float *a, const float *b, float *c, int size);
 }
