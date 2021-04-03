@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+namespace gpu {
+
 void info() {
   int count;
   cudaGetDeviceCount(&count);
@@ -51,3 +53,5 @@ void info() {
     printf("\n");
   }
 }
+
+} // namespace gpu

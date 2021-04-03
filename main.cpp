@@ -1,7 +1,7 @@
 #include "cpu/kernal.h"
 #include "defines.h"
+#include "gpu/info.h"
 #include "gpu/kernal.h"
-#include "info.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -11,7 +11,9 @@
 constexpr int size = 7919;
 
 int main() {
-  info();
+#ifdef __CUDACC__
+  gpu::info();
+#endif
 
   auto argA = static_cast<float *>(ALLOCATE(sizeof(float) * size));
   auto argB = static_cast<float *>(ALLOCATE(sizeof(float) * size));
@@ -31,9 +33,11 @@ int main() {
   cpu::dispatchKernal(argA, argB, argC, size);
   printf("CPU sum is equal to %f\n", sumv(argC, size));
 
+#ifdef __CUDACC__
   zero(argC, size);
   gpu::dispatchKernal(argA, argB, argC, size);
   printf("GPU sum is equal to %f\n", sumv(argC, size));
+#endif
 
   zero(argC, size);
   printf("Verify zero lambda: %f\n", sumv(argC, size));
