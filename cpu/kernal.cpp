@@ -1,15 +1,15 @@
 #include "kernal.h"
 
-#include "../common/add_float.h"
+#include "../common/ray_sample.h"
 
 namespace {
 
-void kernal(const float *a, const float *b, float *c, int size) {
+void kernal(const Vec3f *n, Vec3f *wi, float *throughput, int size) {
   int index = 0;
   int stride = 1;
 
   for (int i = index; i < size; i += stride) {
-    c[i] = addFloat(a[i], b[i]);
+    raySample(i, n[i], wi[i], throughput[i]);
   }
 }
 
@@ -17,8 +17,8 @@ void kernal(const float *a, const float *b, float *c, int size) {
 
 namespace cpu {
 
-void dispatchKernal(const float *a, const float *b, float *c, int size) {
-  kernal(a, b, c, size);
+void dispatchKernal(const Vec3f *n, Vec3f *wi, float *throughput, int size) {
+  kernal(n, wi, throughput, size);
 }
 
 } // namespace cpu

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../common/vector.h"
+
 namespace cpu {
-void dispatchKernal(const float *a, const float *b, float *c, int size);
+void dispatchKernal(const Vec3f *n, Vec3f *wi, float *throughput, int size);
 }

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-c++ main.cpp cpu/kernal.cpp common/add_float.cpp

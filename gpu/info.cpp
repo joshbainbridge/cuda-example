@@ -1,6 +1,6 @@
 #include "info.h"
 
-#include <cstdio>
+#include <stdio.h>
 
 namespace gpu {
 
