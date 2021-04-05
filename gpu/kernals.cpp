@@ -1,6 +1,5 @@
 #include "kernals.h"
 
-#include "../common/build_scene.h"
 #include "../common/generate_hit.h"
 #include "../common/ray_sample.h"
 
@@ -12,21 +11,25 @@ namespace kernals {
 
 __global__ void buildScene(Scene *scene) { ::buildScene(scene); }
 
-__global__ void generateHits(const Scene *scene, Vec3f *ng, int size) {
+__global__ void destroyScene(Scene *scene) { ::destroyScene(scene); }
+
+__global__ void generateHits(const Scene *scene, Vec3f *ng, BsdfPtr *bsdf,
+                             int size) {
   const int index = blockIdx.x * blockDim.x + threadIdx.x;
   const int stride = blockDim.x * gridDim.x;
 
   for (int i = index; i < size; i += stride) {
-    generateHit(i, *scene, ng[i]);
+    generateHit(i, *scene, ng[i], bsdf[i]);
   }
 }
 
-__global__ void sampleRays(const Vec3f *ng, Vec3f *wi, float *f, int size) {
+__global__ void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi,
+                           float *f, int size) {
   const int index = blockIdx.x * blockDim.x + threadIdx.x;
   const int stride = blockDim.x * gridDim.x;
 
   for (int i = index; i < size; i += stride) {
-    raySample(i, ng[i], wi[i], f[i]);
+    raySample(i, ng[i], bsdf[i], wi[i], f[i]);
   }
 }
 
@@ -40,13 +43,19 @@ void buildScene(Scene *scene) {
   cudaDeviceSynchronize();
 }
 
-void generateHits(const Scene *scene, Vec3f *ng, int size) {
-  kernals::generateHits<<<numBlocks, blockSize>>>(scene, ng, size);
+void destroyScene(Scene *scene) {
+  kernals::destroyScene<<<1, 1>>>(scene);
   cudaDeviceSynchronize();
 }
 
-void sampleRays(const Vec3f *ng, Vec3f *wi, float *f, int size) {
-  kernals::sampleRays<<<numBlocks, blockSize>>>(ng, wi, f, size);
+void generateHits(const Scene *scene, Vec3f *ng, BsdfPtr *bsdf, int size) {
+  kernals::generateHits<<<numBlocks, blockSize>>>(scene, ng, bsdf, size);
+  cudaDeviceSynchronize();
+}
+
+void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi, float *f,
+                int size) {
+  kernals::sampleRays<<<numBlocks, blockSize>>>(ng, bsdf, wi, f, size);
   cudaDeviceSynchronize();
 }
 

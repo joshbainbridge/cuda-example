@@ -1,6 +1,7 @@
 #include "random.h"
 
-// Implementation and use is validated here: https://www.shadertoy.com/view/Nd2GRy
+// Implementation and use is validated here:
+// https://www.shadertoy.com/view/Nd2GRy
 
 uint32_t pcg(uint32_t v) {
   uint32_t state = v * 747796405u + 2891336453u;

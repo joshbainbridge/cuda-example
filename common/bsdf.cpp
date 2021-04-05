@@ -29,6 +29,12 @@ HOST_DEVICE void branchlessONB(Vec3f n, Vec3f &b1, Vec3f &b2) {
 
 } // namespace
 
+Vec3f NullBsdf::sample(Vec3f n, float u[2]) { return {}; }
+
+float NullBsdf::f(Vec3f n, Vec3f wi) { return 0.0f; }
+
+float NullBsdf::pdf(Vec3f n, Vec3f wi) { return 0.0f; }
+
 Vec3f DiffuseBsdf::sample(Vec3f n, float u[2]) {
   Vec3f b1, b2;
   branchlessONB(n, b1, b2);

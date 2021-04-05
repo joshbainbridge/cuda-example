@@ -1,4 +1,4 @@
-common = main.cpp common/bsdf.cpp common/build_scene.cpp common/distribution.cpp common/generate_hit.cpp common/random.cpp common/ray_sample.cpp
+common = main.cpp common/bsdf.cpp common/distribution.cpp common/generate_hit.cpp common/random.cpp common/ray_sample.cpp common/scene.cpp
 
 cpu = cpu/kernals.cpp
 gpu = gpu/kernals.cpp gpu/info.cpp
