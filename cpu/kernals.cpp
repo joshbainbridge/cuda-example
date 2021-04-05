@@ -10,22 +10,21 @@ void buildScene(Scene *scene) { ::buildScene(scene); }
 
 void destroyScene(Scene *scene) { ::destroyScene(scene); }
 
-void generateHits(const Scene *scene, Vec3f *ng, BsdfPtr *bsdf, int size) {
+void generateHits(const Scene *scene, Hit *hit, int size) {
   const int index = 0;
   const int stride = 1;
 
   for (int i = index; i < size; i += stride) {
-    generateHit(i, *scene, ng[i], bsdf[i]);
+    generateHit(i, *scene, hit[i]);
   }
 }
 
-void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi, float *f,
-                int size) {
+void sampleRays(const Hit *hit, Vec3f *wi, float *f, int size) {
   const int index = 0;
   const int stride = 1;
 
   for (int i = index; i < size; i += stride) {
-    raySample(i, ng[i], bsdf[i], wi[i], f[i]);
+    raySample(i, hit[i], wi[i], f[i]);
   }
 }
 
@@ -38,13 +37,12 @@ void buildScene(Scene *scene) { kernals::buildScene(scene); }
 
 void destroyScene(Scene *scene) { kernals::destroyScene(scene); }
 
-void generateHits(const Scene *scene, Vec3f *ng, BsdfPtr *bsdf, int size) {
-  kernals::generateHits(scene, ng, bsdf, size);
+void generateHits(const Scene *scene, Hit *hit, int size) {
+  kernals::generateHits(scene, hit, size);
 }
 
-void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi, float *f,
-                int size) {
-  kernals::sampleRays(ng, bsdf, wi, f, size);
+void sampleRays(const Hit *hit, Vec3f *wi, float *f, int size) {
+  kernals::sampleRays(hit, wi, f, size);
 }
 
 } // namespace cpu

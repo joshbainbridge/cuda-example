@@ -13,23 +13,21 @@ __global__ void buildScene(Scene *scene) { ::buildScene(scene); }
 
 __global__ void destroyScene(Scene *scene) { ::destroyScene(scene); }
 
-__global__ void generateHits(const Scene *scene, Vec3f *ng, BsdfPtr *bsdf,
-                             int size) {
+__global__ void generateHits(const Scene *scene, Hit *hit, int size) {
   const int index = blockIdx.x * blockDim.x + threadIdx.x;
   const int stride = blockDim.x * gridDim.x;
 
   for (int i = index; i < size; i += stride) {
-    generateHit(i, *scene, ng[i], bsdf[i]);
+    generateHit(i, *scene, hit[i]);
   }
 }
 
-__global__ void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi,
-                           float *f, int size) {
+__global__ void sampleRays(const Hit *hit, Vec3f *wi, float *f, int size) {
   const int index = blockIdx.x * blockDim.x + threadIdx.x;
   const int stride = blockDim.x * gridDim.x;
 
   for (int i = index; i < size; i += stride) {
-    raySample(i, ng[i], bsdf[i], wi[i], f[i]);
+    raySample(i, hit[i], wi[i], f[i]);
   }
 }
 
@@ -38,25 +36,16 @@ __global__ void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi,
 
 namespace gpu {
 
-void buildScene(Scene *scene) {
-  kernals::buildScene<<<1, 1>>>(scene);
-  cudaDeviceSynchronize();
+void buildScene(Scene *scene) { kernals::buildScene<<<1, 1>>>(scene); }
+
+void destroyScene(Scene *scene) { kernals::destroyScene<<<1, 1>>>(scene); }
+
+void generateHits(const Scene *scene, Hit *hit, int size) {
+  kernals::generateHits<<<numBlocks, blockSize>>>(scene, hit, size);
 }
 
-void destroyScene(Scene *scene) {
-  kernals::destroyScene<<<1, 1>>>(scene);
-  cudaDeviceSynchronize();
-}
-
-void generateHits(const Scene *scene, Vec3f *ng, BsdfPtr *bsdf, int size) {
-  kernals::generateHits<<<numBlocks, blockSize>>>(scene, ng, bsdf, size);
-  cudaDeviceSynchronize();
-}
-
-void sampleRays(const Vec3f *ng, const BsdfPtr *bsdf, Vec3f *wi, float *f,
-                int size) {
-  kernals::sampleRays<<<numBlocks, blockSize>>>(ng, bsdf, wi, f, size);
-  cudaDeviceSynchronize();
+void sampleRays(const Hit *hit, Vec3f *wi, float *f, int size) {
+  kernals::sampleRays<<<numBlocks, blockSize>>>(hit, wi, f, size);
 }
 
 } // namespace gpu

@@ -4,7 +4,7 @@
 
 constexpr int rngSeed = 0;
 
-void generateHit(int index, const Scene &scene, Vec3f &ng, BsdfPtr &bsdf) {
+void generateHit(int index, const Scene &scene, Hit &hit) {
   auto state = pcg(pcg(index) + rngSeed);
 
   float u[3];
@@ -28,6 +28,6 @@ void generateHit(int index, const Scene &scene, Vec3f &ng, BsdfPtr &bsdf) {
     shader = scene.bsdfB;
   }
 
-  ng = normal;
-  bsdf = shader;
+  hit.ng = normal;
+  hit.bsdf = shader;
 }
