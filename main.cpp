@@ -1,10 +1,9 @@
-#include "common/distribution.h"
-#include "common/random.h"
+#include "common/scene.h"
 #include "common/vector.h"
-#include "cpu/kernal.h"
+#include "cpu/kernals.h"
 #include "defines.h"
 #include "gpu/info.h"
-#include "gpu/kernal.h"
+#include "gpu/kernals.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -13,56 +12,46 @@
 // Pick a random size for computation (1000th prime number)
 constexpr int size = 7919;
 
+//#define PRINT_INFO
+
 int main() {
 #ifdef __CUDACC__
+#ifdef PRINT_INFO
   gpu::info();
 #endif
+#endif
 
-  // Input to the computation
-  auto n = static_cast<Vec3f *>(ALLOCATE(sizeof(Vec3f) * size));
-
-  for (int i = 0; i < size; ++i) {
-    auto state = pcg(pcg(i) + 0);
-
-    float u[2];
-
-    state = pcg(state);
-    u[0] = pcgFloat(state);
-
-    state = pcg(state);
-    u[1] = pcgFloat(state);
-
-    Vec3f normal;
-    latitudeLongitudeMapping(u, normal);
-
-    n[i] = normal;
-  }
-
-  // Output of the computation
+  auto scene = static_cast<Scene *>(ALLOCATE(sizeof(Scene)));
+  auto ng = static_cast<Vec3f *>(ALLOCATE(sizeof(Vec3f) * size));
   auto wi = static_cast<Vec3f *>(ALLOCATE(sizeof(Vec3f) * size));
-  auto throughput = static_cast<float *>(ALLOCATE(sizeof(float) * size));
+  auto f = static_cast<float *>(ALLOCATE(sizeof(float) * size));
 
   auto zero = [](float *array, int size) { std::fill_n(array, size, 0.0f); };
   auto sumv = [](float *array, int size) {
     return std::accumulate(array, array + size, 0.0f);
   };
 
-  zero(throughput, size);
-  cpu::dispatchKernal(n, wi, throughput, size);
-  printf("CPU throughput is equal to %f\n", sumv(throughput, size) / size);
+  zero(f, size);
+  cpu::buildScene(scene);
+  cpu::generateHits(scene, ng, size);
+  cpu::sampleRays(ng, wi, f, size);
+  printf("CPU 'f' is equal to %f\n", sumv(f, size) / size);
 
 #ifdef __CUDACC__
-  zero(throughput, size);
-  gpu::dispatchKernal(n, wi, throughput, size);
-  printf("GPU throughput is equal to %f\n", sumv(throughput, size) / size);
+  zero(f, size);
+  gpu::buildScene(scene);
+  gpu::generateHits(scene, ng, size);
+  gpu::sampleRays(ng, wi, f, size);
+  printf("GPU 'f' is equal to %f\n", sumv(f, size) / size);
 #endif
 
-  zero(throughput, size);
-  printf("Verify zero lambda: %f\n", sumv(throughput, size));
+  zero(f, size);
+  printf("Verify zero lambda: %f\n", sumv(f, size));
 
-  FREE(n);
+  FREE(scene);
+  FREE(ng);
   FREE(wi);
-  FREE(throughput);
+  FREE(f);
 
   return 0;
 }

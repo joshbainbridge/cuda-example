@@ -1,9 +1,11 @@
 #include "ray_sample.h"
+#include "bsdf.h"
 #include "random.h"
 
+constexpr int rngSeed = 1;
+
 void raySample(int index, Vec3f n, Vec3f &wi, float &throughput) {
-  auto state = pcg(pcg(index) + 1);
-  DiffuseBsdf bsdf(0.5f);
+  auto state = pcg(pcg(index) + rngSeed);
 
   float u[2];
 
@@ -13,6 +15,7 @@ void raySample(int index, Vec3f n, Vec3f &wi, float &throughput) {
   state = pcg(state);
   u[1] = pcgFloat(state);
 
+  DiffuseBsdf bsdf(0.5f);
   wi = bsdf.sample(n, u);
 
   float f = bsdf.f(n, wi);
